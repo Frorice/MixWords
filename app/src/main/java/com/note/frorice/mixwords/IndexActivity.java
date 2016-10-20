@@ -9,13 +9,22 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private RecyclerView recyclerView;
+    private List<WordsBook> wordsBookList;
+    private WordsBookAdapter wordsBookAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +50,19 @@ public class IndexActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //实现单词本列表
+        LinearLayoutManager layoutManager=new LinearLayoutManager(this);
+        recyclerView     = (RecyclerView) findViewById(R.id.indexRecyclerView);
+
+        //获取单词本数据
+        initWordsBooksData();
+
+        wordsBookAdapter = new WordsBookAdapter(wordsBookList,IndexActivity.this);
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(wordsBookAdapter);
     }
 
     @Override
@@ -107,5 +129,14 @@ public class IndexActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void initWordsBooksData() {
+        wordsBookList = new ArrayList<>();
+        //添加新闻
+        wordsBookList.add(new WordsBook("1","小王子单词","frorice","2016-10-20"));
+        wordsBookList.add(new WordsBook("2","日语","frorice","2016-10-20"));
+        wordsBookList.add(new WordsBook("3","德语","frorice","2016-10-20"));
+        wordsBookList.add(new WordsBook("4","法语","frorice","2016-10-20"));
     }
 }

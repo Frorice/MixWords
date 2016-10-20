@@ -1,10 +1,10 @@
 package com.note.frorice.mixwords;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -20,7 +21,7 @@ public class IndexActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_index);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarIndex);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -79,19 +80,28 @@ public class IndexActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Intent intent = new Intent(IndexActivity.this,wordsBookActivity.class);
+        if (id == R.id.nav_star) {
+            // 跳转到星标单词,传递数据{targetIntent:starWords}
+            Bundle bundle = new Bundle();
+            bundle.putString("targetIntent","starWords");
+            intent.putExtras(bundle);
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+            startActivity(intent);
+        } else if (id == R.id.nav_clear) {
+            //跳转到未完成单词,传递数据{targetIntent:undoneWords}
+            Bundle bundle = new Bundle();
+            bundle.putString("targetIntent","undoneWords");
+            intent.putExtras(bundle);
 
-        } else if (id == R.id.nav_slideshow) {
+            startActivity(intent);
+        } else if (id == R.id.nav_done) {
+            //跳转到已完成单词,传递数据{targetIntent:doneWords}
+            Bundle bundle = new Bundle();
+            bundle.putString("targetIntent","doneWords");
+            intent.putExtras(bundle);
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

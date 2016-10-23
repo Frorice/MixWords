@@ -6,34 +6,30 @@ package com.note.frorice.mixwords;
  */
 
 public class WordsBook {
-    private String    id;
-    private String title;
-    private String author;
-    private String recordDate;
+    private String bookName;
+    private String creator;
+    private String createDate;
 
     /**
      * 构造函数
      */
-    public WordsBook(String id, String title, String author, String date){
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.recordDate = date;
+    public WordsBook(String bookName, String creator, String createDate){
+        this.bookName = bookName;
+        this.creator = creator;
+        this.createDate = createDate;
     }
 
-    public String getId(){
-        return id;
+
+
+    public String getBookName(){
+        return bookName;
     }
 
-    public String getTitle(){
-        return title;
+    public String getCreator(){
+        return creator;
     }
 
-    public String getAuthor(){
-        return author;
-    }
-
-    public String getRecordDate(){
-        return recordDate;
+    public String getCreateDate(){
+        return createDate;
     }
 }

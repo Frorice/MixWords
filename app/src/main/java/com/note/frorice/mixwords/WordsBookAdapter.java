@@ -55,9 +55,9 @@ public class WordsBookAdapter extends RecyclerView.Adapter<WordsBookAdapter.Word
     @Override
     public void onBindViewHolder(WordsBookAdapter.WordsBookViewHolder personViewHolder, int i) {
         personViewHolder.wordsBookCardView.setId(i);
-        personViewHolder.cardTitle.setText(WordsBooks.get(i).getTitle());
-        personViewHolder.cardAuthor.setText(WordsBooks.get(i).getAuthor());
-        personViewHolder.cardRecordDate.setText(WordsBooks.get(i).getRecordDate());
+        personViewHolder.cardTitle.setText(WordsBooks.get(i).getBookName());
+        personViewHolder.cardAuthor.setText(WordsBooks.get(i).getCreator());
+        personViewHolder.cardRecordDate.setText(WordsBooks.get(i).getCreateDate());
 
         //为cardView设置点击事件
         personViewHolder.wordsBookCardView.setOnClickListener(new View.OnClickListener() {
@@ -67,10 +67,9 @@ public class WordsBookAdapter extends RecyclerView.Adapter<WordsBookAdapter.Word
                 int book = v.getId();
                 Bundle bundle = new Bundle();
                 bundle.putString("targetIntent", "wordsBook");
-                bundle.putString("title", WordsBooks.get(book).getTitle());
-                bundle.putString("bookId", WordsBooks.get(book).getId());
-                bundle.putString("author", WordsBooks.get(book).getAuthor());
-                bundle.putString("recordDate", WordsBooks.get(book).getRecordDate());
+                bundle.putString("title", WordsBooks.get(book).getBookName());
+                bundle.putString("author", WordsBooks.get(book).getCreator());
+                bundle.putString("recordDate", WordsBooks.get(book).getCreateDate());
                 intent.putExtras(bundle);
                 context.startActivity(intent);
             }

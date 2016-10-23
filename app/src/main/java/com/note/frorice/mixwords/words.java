@@ -6,17 +6,21 @@ package com.note.frorice.mixwords;
 
 public class words {
     private String name;
-    private String isStar;
-    private String isDone;
+    private int isStar;
+    private int isDone;
+    private String langType;
+    private String bookName;
     private String interpretation;
 
     /**
      * 构造函数
      */
-    public words(String name, String isStar, String isDone, String interpretation){
+    public words(String name, int isStar, int isDone, String langType, String bookName ,String interpretation){
         this.name   = name;
         this.isStar = isStar;
         this.isDone = isDone;
+        this.langType = langType;
+        this.bookName = bookName;
         this.interpretation = interpretation;
     }
 
@@ -24,11 +28,11 @@ public class words {
         return name;
     }
 
-    public String getIsStar(){
+    public int getIsStar(){
         return isStar;
     }
 
-    public String getIsDone(){
+    public int getIsDone(){
         return isDone;
     }
 

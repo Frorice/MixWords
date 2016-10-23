@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class wordsBookActivity extends AppCompatActivity {
@@ -17,13 +16,37 @@ public class wordsBookActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<words> wordsList;
     private WordsAdapter wordsAdapter;
+    private Model model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_words_book);
+        //初始化ui组件
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarWords);
         setSupportActionBar(toolbar);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        initDataBase();
+        initActivity();
+    }
+    private void initDataBase(){
+        String databaseName = "mixwords";
+        CreateSQLiteDatabase databaseHelper =
+                new CreateSQLiteDatabase(this, databaseName, null, 1001);
+
+        model = new Model(databaseHelper);
+    }
+
+    private void initActivity(){
         //根据主activity传递的activity名称取数据来设置当前activity
         Bundle bundle = this.getIntent().getExtras();
         String intentData = bundle.getString("targetIntent");
@@ -41,29 +64,6 @@ public class wordsBookActivity extends AppCompatActivity {
                 initBookWordsActivity(bundle);
                 break;
         }
-
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-
-    }
-
-    private void initWordsData(){
-        wordsList = new ArrayList<>();
-        //添加单词
-        wordsList.add(new words("dog","true","true","狗"));
-        wordsList.add(new words("pig","true","false","猪"));
-        wordsList.add(new words("cat","false","true","猫"));
-        wordsList.add(new words("tiger","false","false","虎"));
     }
 
     private void initStarWordsActivity(Bundle bundle){
@@ -79,13 +79,16 @@ public class wordsBookActivity extends AppCompatActivity {
     }
 
     private void initBookWordsActivity(Bundle bundle){
-        this.setTitle(bundle.getString("title"));
+        String bookName = bundle.getString("title");
+        this.setTitle(bookName);
+
         //实现单词列表
         LinearLayoutManager layoutManager=new LinearLayoutManager(this);
         recyclerView     = (RecyclerView) findViewById(R.id.wordsRecyclerView);
 
+
         //获取单词本中的单词
-        initWordsData();
+        wordsList = model.getWordsByBookName(bookName);
 
         wordsAdapter = new WordsAdapter(wordsList, wordsBookActivity.this);
 
@@ -93,4 +96,5 @@ public class wordsBookActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(wordsAdapter);
     }
+
 }

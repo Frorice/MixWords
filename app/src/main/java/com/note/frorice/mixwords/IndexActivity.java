@@ -17,8 +17,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class IndexActivity extends AppCompatActivity
@@ -49,7 +49,15 @@ public class IndexActivity extends AppCompatActivity
                 builder.setPositiveButton("确定",  new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        model.createWordsBook(editText.getText().toString(),"frorice");
+                        String bookName = editText.getText().toString();
+                        if(bookName.length()==0){
+                            Toast.makeText(IndexActivity.this, "名称不能为空！", Toast.LENGTH_SHORT).show();
+                        }else{
+                            model.createWordsBook(bookName, "frorice");
+                            Toast.makeText(IndexActivity.this, bookName+"已创建", Toast.LENGTH_SHORT).show();
+                            initWordsBooksData();
+                        }
+
                     }
                 });
                 builder.show();
@@ -140,16 +148,11 @@ public class IndexActivity extends AppCompatActivity
 
     private void initWordsBooksData() {
         //实现单词本列表
-        LinearLayoutManager layoutManager=new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView     = (RecyclerView) findViewById(R.id.indexRecyclerView);
 
         //获取单词本数据
-        wordsBookList = new ArrayList<>();
-        //添加新闻
-        wordsBookList.add(new WordsBook("小王子单词","frorice","2016-10-20"));
-        wordsBookList.add(new WordsBook("日语","frorice","2016-10-20"));
-        wordsBookList.add(new WordsBook("德语","frorice","2016-10-20"));
-        wordsBookList.add(new WordsBook("我的单词本","frorice","2016-10-20"));
+        wordsBookList = model.getWordsBooks();
 
         wordsBookAdapter = new WordsBookAdapter(wordsBookList,IndexActivity.this);
 

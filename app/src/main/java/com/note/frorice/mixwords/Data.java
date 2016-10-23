@@ -4,9 +4,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by fanfa on 2016/10/21.
@@ -64,9 +74,10 @@ public class Data {
             return wordsList;
         }
         catch (Exception exp){
-            throw exp;
+            Toast.makeText(new wordsBookActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            exp.printStackTrace();
         }
-
+        return wordsList;
     }
 
     public void insertWord(String name, String bookName, String langType, String interpretation){
@@ -78,7 +89,8 @@ public class Data {
             database.close();
         }
         catch (Exception exp){
-            throw exp;
+            Toast.makeText(new wordsBookActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            exp.printStackTrace();
         }
     }
 
@@ -90,7 +102,8 @@ public class Data {
             database.close();
         }
         catch (Exception exp){
-            throw exp;
+            Toast.makeText(new wordsBookActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            exp.printStackTrace();
         }
     }
 
@@ -115,7 +128,8 @@ public class Data {
             database.close();
         }
         catch (Exception exp){
-            throw exp;
+            Toast.makeText(new wordsBookActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            exp.printStackTrace();
         }
     }
 
@@ -137,20 +151,25 @@ public class Data {
             return wordsBooks;
         }
         catch (Exception exp){
-            throw exp;
+            Toast.makeText(new IndexActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            exp.printStackTrace();
         }
+        return wordsBooks;
     }
 
     public void insertWordsBook(String bookName, String creator){
         try{
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String date = df.format(new Date());
             database = databaseHelper.getWritableDatabase();
             String sql = "insert into books(bookName, creator, createDate) values('"
-                + bookName + "','" + creator + "',getDate()" +  ")";
+                + bookName + "','" + creator + "','"+ date +  "')";
             database.execSQL(sql);
             database.close();
         }
         catch (Exception exp){
-            throw exp;
+            Toast.makeText(new IndexActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            exp.printStackTrace();
         }
     }
 
@@ -162,7 +181,8 @@ public class Data {
             database.close();
         }
         catch (Exception exp){
-            throw exp;
+            Toast.makeText(new IndexActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            exp.printStackTrace();
         }
     }
 
@@ -174,7 +194,8 @@ public class Data {
             database.close();
         }
         catch (Exception exp){
-            throw exp;
+            Toast.makeText(new IndexActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            exp.printStackTrace();
         }
     }
 }
@@ -188,18 +209,22 @@ class CreateSQLiteDatabase extends SQLiteOpenHelper {
 
 
     public void onCreate(SQLiteDatabase db) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String date = df.format(new Date());
         String sql1 = "CREATE TABLE IF NOT EXISTS books("
-            + "bookName TEXT(64) CONSTRAINT bp PRIMARY KEY ASC ON CONFLICT FAIL CONSTRAINT bn NOT NULL CONSTRAINT bu UNIQUE,"
+            + "bookName TEXT(64) CONSTRAINT bp PRIMARY KEY ASC ON CONFLICT FAIL CONSTRAINT bn NOT NULL CONSTRAINT bu UNIQUE DEFAULT '单词本',"
             + "creator TEXT(32) NOT NULL DEFAULT 'frorice',"
-            + "createDate date NOT NULL DEFAULT getDate()";
+            + "createDate TEXT(16) NOT NULL DEFAULT '"+ date + "')";
 
         String sql2 = "CREATE TABLE IF NOT EXISTS words("
             + "name TEXT(64) CONSTRAINT m PRIMARY KEY ASC ON CONFLICT FAIL CONSTRAINT n NOT NULL CONSTRAINT u UNIQUE,"
             + "isStar BOOLEAN(2) NOT NULL DEFAULT 0,"
             + "isDone Boolean(2) NOT NULL DEFAULT 0,"
             + "langType TEXT(20) NOT NULL,"
-            + "bookName String(20) foreign key references books(bookName) NOT NULL UNIQUE CONSTRAINT b DEFAULT 单词本,"
-            + "interpretation TEXT(512) NOT NULL)";
+            + "interpretation TEXT(512) NOT NULL,"
+            + "bookName TEXT(64) NOT NULL,"
+            + "foreign key(bookName) references books(bookName))"
+            ;
 
         db.execSQL(sql1);
         db.execSQL(sql2);
@@ -211,3 +236,136 @@ class CreateSQLiteDatabase extends SQLiteOpenHelper {
     }
 }
 
+class GetPostUtil {
+    /**
+     * 向指定URL发送GET方法的请求
+     *
+     * @param url
+     *            发送请求的URL
+     * @param params
+     *            请求参数，请求参数应该是name1=value1&name2=value2的形式。
+     * @return URL所代表远程资源的响应
+     */
+    public static String sendGet(String url, String params) {
+        String result = "";
+        BufferedReader in = null;
+        try
+        {
+            String urlName = url + "?" + params;
+            URL realUrl = new URL(urlName);
+            // 打开和URL之间的连接
+            URLConnection conn = realUrl.openConnection();
+            // 设置通用的请求属性
+            conn.setRequestProperty("accept", "*/*");
+            conn.setRequestProperty("connection", "Keep-Alive");
+            conn.setRequestProperty("user-agent",
+                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)");
+            // 建立实际的连接
+            conn.connect();
+            // 获取所有响应头字段
+            Map<String, List<String>> map = conn.getHeaderFields();
+            // 遍历所有的响应头字段
+            for (String key : map.keySet())
+            {
+                System.out.println(key + "--->" + map.get(key));
+            }
+            // 定义BufferedReader输入流来读取URL的响应
+            in = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null)
+            {
+                result += "\n" + line;
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println("发送GET请求出现异常！" + e);
+            e.printStackTrace();
+        }
+        // 使用finally块来关闭输入流
+        finally
+        {
+            try
+            {
+                if (in != null)
+                {
+                    in.close();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 向指定URL发送POST方法的请求
+     *
+     * @param url
+     *            发送请求的URL
+     * @param params
+     *            请求参数，请求参数应该是name1=value1&name2=value2的形式。
+     * @return URL所代表远程资源的响应
+     */
+    public static String sendPost(String url, String params) {
+        PrintWriter out = null;
+        BufferedReader in = null;
+        String result = "";
+        try
+        {
+            URL realUrl = new URL(url);
+            // 打开和URL之间的连接
+            URLConnection conn = realUrl.openConnection();
+            // 设置通用的请求属性
+            conn.setRequestProperty("accept", "*/*");
+            conn.setRequestProperty("connection", "Keep-Alive");
+            conn.setRequestProperty("user-agent",
+                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)");
+            // 发送POST请求必须设置如下两行
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            // 获取URLConnection对象对应的输出流
+            out = new PrintWriter(conn.getOutputStream());
+            // 发送请求参数
+            out.print(params);
+            // flush输出流的缓冲
+            out.flush();
+            // 定义BufferedReader输入流来读取URL的响应
+            in = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null)
+            {
+                result += "\n" + line;
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println("发送POST请求出现异常！" + e);
+            e.printStackTrace();
+        }
+        // 使用finally块来关闭输出流、输入流
+        finally
+        {
+            try
+            {
+                if (out != null)
+                {
+                    out.close();
+                }
+                if (in != null)
+                {
+                    in.close();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return result;
+    }
+}

@@ -1,5 +1,8 @@
 package com.note.frorice.mixwords;
 
+import android.os.Handler;
+import android.os.Message;
+
 import java.util.List;
 
 /**
@@ -10,9 +13,11 @@ public class Model {
     private List<words> wordsList;
     private List<WordsBook> wordsBooksList;
     private Data data;
+    private GetPostUtil getPostUtil;
 
     public Model(CreateSQLiteDatabase databaseHelper){
         this.data = new Data(databaseHelper);
+        this.getPostUtil = new GetPostUtil();
     }
 
     public List<words> getStarWords(){
@@ -75,5 +80,43 @@ public class Model {
 
     public void deleteWordsBook(String bookName){
         data.deleteWordsBook(bookName);
+    }
+
+    public void sendGet(String url, String params, Handler handler){
+        new Thread(new RunHttpRequest("GET", url, params, handler));
+    }
+
+    public void sendPost(String url, String params, Handler handler){
+        new Thread(new RunHttpRequest("POST", url, params, handler));
+    }
+}
+
+class RunHttpRequest implements Runnable{
+    private String url;
+    private String params;
+    private String requestType;
+    private Handler handler;
+
+    public RunHttpRequest(String requestType, String url, String params, Handler handler){
+        super();
+        this.requestType = requestType;
+        this.url    = url;
+        this.params = params;
+        this.handler = handler;
+    }
+
+    @Override
+    public void run() {
+        Message m = new Message();
+        m.what = 0x123;
+
+        if(requestType.equals("GET")){
+            m.obj = GetPostUtil.sendGet(url, params);
+        }
+        if(requestType.equals("POST")){
+            m.obj = GetPostUtil.sendPost(url, params);
+        }
+
+        handler.sendMessage(m);
     }
 }

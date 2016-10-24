@@ -58,12 +58,14 @@ public class Model {
     }
 
     public void addWord(String name, String bookName, String langType, String interpretation){
+        interpretation = interpretation.replaceAll("\'","sup");
         data.insertWord(name, bookName, langType, interpretation);
     }
 
     public void deleteWord(String name){
         data.deleteWord(name);
     }
+
 
     public List<WordsBook> getWordsBooks(){
         wordsBooksList = data.getWordsBooks();
@@ -83,11 +85,11 @@ public class Model {
     }
 
     public void sendGet(String url, String params, Handler handler){
-        new Thread(new RunHttpRequest("GET", url, params, handler));
+        new Thread(new RunHttpRequest("GET", url, params, handler)).start();
     }
 
     public void sendPost(String url, String params, Handler handler){
-        new Thread(new RunHttpRequest("POST", url, params, handler));
+        new Thread(new RunHttpRequest("POST", url, params, handler)).start();
     }
 }
 

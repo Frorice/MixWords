@@ -6,36 +6,70 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="1">
         <EditText
             android:layout_margin="8dp"
             android:id="@+id/et"
-            android:layout_width="120dp"
-            android:layout_height="36dp"
-            android:paddingLeft="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="20dp"
+            android:paddingRight="56dp"
+            android:maxLines="1"
             />
         <android.support.design.widget.CheckableImageButton
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_marginLeft="-36dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="20dp"
             android:id = "@+id/searchButton"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
             android:background="@color/colorPureWhite"
             android:src="@drawable/ic_search_black_24dp"/>
 
     </LinearLayout>
-    <TextView
-        android:layout_margin="8dp"
-        android:id="@+id/tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16dp"
-        android:text="单词释义：" />
-    <TextView
-        android:layout_margin="8dp"
-        android:id="@+id/mean"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16dp" />
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
+        <TextView
+            android:layout_margin="8dp"
+            android:id="@+id/queryWord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24dp"
+            android:textColor="@color/colorPureBlack"
+            android:text="" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_margin="8dp"
+                android:id="@+id/pronun_UK"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp" />
+            <TextView
+                android:layout_margin="8dp"
+                android:id="@+id/pronun_USA"
+                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp" />
+        </LinearLayout>
+        <TextView
+            android:layout_margin="8dp"
+            android:id="@+id/mean"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16dp" />
+    </LinearLayout>
+
 </LinearLayout>

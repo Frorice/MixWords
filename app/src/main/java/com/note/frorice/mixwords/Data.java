@@ -18,6 +18,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.note.frorice.mixwords.IndexActivity.idxtivity;
+import static com.note.frorice.mixwords.wordsBookActivity.wbActivity;
+
 /**
  * Created by fanfa on 2016/10/21.
  */
@@ -36,6 +39,7 @@ public class Data {
     public List<words> getWords(String bookName, int isDone, int isStar){
 
         try {
+            wordsList = new ArrayList<>();
             database = databaseHelper.getWritableDatabase();
             //构造查询语句
             String sql = "select * from words where ";
@@ -57,15 +61,15 @@ public class Data {
             sql = sql.substring(0, sql.length() - 3);
 
             Cursor cursor = database.rawQuery(sql, null);
-            wordsList = new ArrayList<>();
+
 
             while (cursor.moveToNext()) {
                 String name = cursor.getString(0);
                 isStar = cursor.getInt(1);
                 isDone = cursor.getInt(2);
-                bookName = cursor.getString(4);
                 String langType = cursor.getString(3);
-                String interpretation = cursor.getString(5);
+                bookName = cursor.getString(5);
+                String interpretation = cursor.getString(4);
 
                 wordsList.add(new words(name, isStar, isDone, bookName, langType, interpretation));
             }
@@ -74,10 +78,11 @@ public class Data {
             return wordsList;
         }
         catch (Exception exp){
-            Toast.makeText(new wordsBookActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
-            exp.printStackTrace();
+            Toast.makeText(wbActivity, exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
+        }finally {
+            return wordsList;
         }
-        return wordsList;
+
     }
 
     public void insertWord(String name, String bookName, String langType, String interpretation){
@@ -89,8 +94,7 @@ public class Data {
             database.close();
         }
         catch (Exception exp){
-            Toast.makeText(new wordsBookActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
-            exp.printStackTrace();
+            Toast.makeText(wbActivity,exp.getMessage().toString(),Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -102,8 +106,7 @@ public class Data {
             database.close();
         }
         catch (Exception exp){
-            Toast.makeText(new wordsBookActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
-            exp.printStackTrace();
+            Toast.makeText(wbActivity,exp.getMessage().toString(),Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -128,17 +131,16 @@ public class Data {
             database.close();
         }
         catch (Exception exp){
-            Toast.makeText(new wordsBookActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
-            exp.printStackTrace();
+            Toast.makeText(wbActivity,exp.getMessage().toString(),Toast.LENGTH_SHORT).show();
         }
     }
 
     public List<WordsBook> getWordsBooks(){
         try {
+            wordsBooks = new ArrayList<>();
             database = databaseHelper.getWritableDatabase();
             String sql = "select * from books ";
             Cursor cursor = database.rawQuery(sql, null);
-            wordsBooks = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String bookName = cursor.getString(0);
                 String creator = cursor.getString(1);
@@ -148,13 +150,13 @@ public class Data {
             }
             cursor.close();
             database.close();
-            return wordsBooks;
         }
         catch (Exception exp){
-            Toast.makeText(new IndexActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
-            exp.printStackTrace();
+            Toast.makeText(idxtivity,exp.getMessage().toString(),Toast.LENGTH_SHORT).show();
+        }finally {
+            return wordsBooks;
         }
-        return wordsBooks;
+
     }
 
     public void insertWordsBook(String bookName, String creator){
@@ -168,21 +170,21 @@ public class Data {
             database.close();
         }
         catch (Exception exp){
-            Toast.makeText(new IndexActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
-            exp.printStackTrace();
+            Toast.makeText(idxtivity,exp.getMessage().toString(),Toast.LENGTH_SHORT).show();
         }
     }
 
     public void deleteWordsBook(String bookName){
         try{
             database = databaseHelper.getWritableDatabase();
-            String sql = "delete from books where bookName = '"+ bookName + "'";
-            database.execSQL(sql);
+            String sql1 = "delete from books where bookName = '"+ bookName + "'";
+            String sql2 = "delete from words where bookName = '"+ bookName + "'";
+            database.execSQL(sql1);
+            database.execSQL(sql2);
             database.close();
         }
         catch (Exception exp){
-            Toast.makeText(new IndexActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
-            exp.printStackTrace();
+            Toast.makeText(idxtivity,exp.getMessage().toString(),Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -194,8 +196,7 @@ public class Data {
             database.close();
         }
         catch (Exception exp){
-            Toast.makeText(new IndexActivity(), exp.getMessage().toString(), Toast.LENGTH_SHORT).show();
-            exp.printStackTrace();
+            Toast.makeText(idxtivity,exp.getMessage().toString(),Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -18,7 +18,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 public class wordsBookActivity extends AppCompatActivity {
@@ -27,15 +33,28 @@ public class wordsBookActivity extends AppCompatActivity {
     private List<words> wordsList;
     private WordsAdapter wordsAdapter;
     private Model model;
-
+    private String translationString = null;
+    private String bookName;
+    private String queryWord;
+    public static wordsBookActivity wbActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        wbActivity = this;
         setContentView(R.layout.activity_words_book);
         //初始化ui组件
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarWords);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        setFabOnclick(fab);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        initDataBase();
+        initActivity();
+    }
+
+    private void setFabOnclick(FloatingActionButton fab){
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -47,14 +66,51 @@ public class wordsBookActivity extends AppCompatActivity {
                 builder.setView(dialog);
 
                 final EditText editText = (EditText) dialog.findViewById(R.id.et);
+
                 ImageButton searchButton = (ImageButton) dialog.findViewById(R.id.searchButton);
-                final TextView wordMean = (TextView) dialog.findViewById(R.id.mean);
+                final TextView wordMeanView = (TextView) dialog.findViewById(R.id.mean);
+                final TextView queryWordView = (TextView) dialog.findViewById(R.id.queryWord);
+                final TextView pronunUKView = (TextView) dialog.findViewById(R.id.pronun_UK);
+                final TextView pronunUSAView = (TextView) dialog.findViewById(R.id.pronun_USA);
 
                 final Handler handler = new Handler(){
                     @Override
                     public void handleMessage(Message msg){
                         if(msg.what == 0x123){
-                            wordMean.setText(msg.obj.toString());
+                            try {
+                                translationString = msg.obj.toString();
+                                JSONObject translationObj = new JSONObject(translationString);
+                                JSONObject transBasicObj = new JSONObject(translationObj.getString("basic"));
+                                if(translationObj.has("basic")){
+                                    queryWordView.setText(translationObj.getString("query"));
+                                    if(transBasicObj.has("uk-phonetic")){
+                                        String pronunUk = transBasicObj.getString("uk-phonetic");
+                                        if(pronunUk.length()>=15){
+                                            pronunUKView.setText("英 【"+pronunUk+"】");
+                                        }else{
+                                            pronunUKView.setText("英 【"+pronunUk+"】\n");
+                                        }
+
+                                    }
+                                    if(transBasicObj.has("us-phonetic")){
+                                        String pronunUs = transBasicObj.getString("us-phonetic");
+                                        pronunUSAView.setText("美 【"+pronunUs+"】");
+                                    }
+                                    String explainStr = transBasicObj.getString("explains");
+                                    String[] explains = explainStr.substring(1,explainStr.length()-1).split(",");
+                                    explainStr = "";
+                                    for(int i=0;i<explains.length;i++){
+                                        explainStr += explains[i]+"\n";
+                                    }
+                                    wordMeanView.setText(explainStr);
+                                }else{
+                                    wordMeanView.setText("无法对该单词进行有效的翻译!");
+                                }
+
+                            }catch (JSONException exp){
+                                exp.printStackTrace();
+                            }
+
                         }
                     }
                 };
@@ -62,8 +118,7 @@ public class wordsBookActivity extends AppCompatActivity {
                 searchButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String queryWord = editText.getText().toString();
-                        Toast.makeText(wordsBookActivity.this,"??",Toast.LENGTH_SHORT);
+                        queryWord = editText.getText().toString();
                         if(queryWord.length()!=0) {
                             model.sendGet("http://fanyi.youdao.com/openapi.do", "keyfrom=frorice-note&key=274502307&type=data&doctype=json&version=1.1&q=" + queryWord, handler);
                         }else{
@@ -76,17 +131,19 @@ public class wordsBookActivity extends AppCompatActivity {
                 builder.setPositiveButton("确定",  new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
-
+                        if(translationString!=null){
+                            //将单词翻译保存到数据库
+                            model.addWord(queryWord,bookName,"english",translationString);
+                            //刷新单词列表
+                            initActivity();
+                        }
+                        //保存完置空，防止下次查询空数据影响
+                        translationString = null;
                     }
                 });
                 builder.show();
             }
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        initDataBase();
-        initActivity();
     }
     private void initDataBase(){
         String databaseName = "mixwords";
@@ -129,7 +186,7 @@ public class wordsBookActivity extends AppCompatActivity {
     }
 
     private void initBookWordsActivity(Bundle bundle){
-        String bookName = bundle.getString("title");
+        bookName = bundle.getString("title");
         this.setTitle(bookName);
 
         //实现单词列表
@@ -147,4 +204,21 @@ public class wordsBookActivity extends AppCompatActivity {
         recyclerView.setAdapter(wordsAdapter);
     }
 
+    private static Map handleTranslation(String translation) throws JSONException{
+        JSONObject jsonObject = new JSONObject(translation);
+
+        Map result = new HashMap();
+        Iterator iterator = jsonObject.keys();
+        String key = null;
+        String value = null;
+
+        while (iterator.hasNext()) {
+
+            key = (String) iterator.next();
+            value = jsonObject.getString(key);
+            result.put(key, value);
+
+        }
+        return result;
+    }
 }

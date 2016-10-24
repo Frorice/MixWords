@@ -29,9 +29,12 @@ public class IndexActivity extends AppCompatActivity
     private WordsBookAdapter wordsBookAdapter;
     private Model model;
     private String databaseName;
+    public static IndexActivity idxtivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        idxtivity = this;
         setContentView(R.layout.activity_index);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarIndex);
         setSupportActionBar(toolbar);

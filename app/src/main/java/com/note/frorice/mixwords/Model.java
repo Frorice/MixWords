@@ -21,19 +21,19 @@ public class Model {
     }
 
     public List<words> getStarWords(){
-        wordsList = data.getWords(null,1,2);
+        wordsList = data.getWords(null,2,1);
 
         return wordsList;
     }
 
     public List<words> getUndoneWords(){
-        wordsList = data.getWords(null,2,0);
+        wordsList = data.getWords(null,0,2);
 
         return wordsList;
     }
 
     public List<words> getDoneWords(){
-        wordsList = data.getWords(null,2,1);
+        wordsList = data.getWords(null,1,2);
 
         return wordsList;
     }
@@ -45,10 +45,6 @@ public class Model {
 
     //传入当前的单词状态（isStar 0 非星标，1 星标）
     public void toggleStar(String wordName, String isStar){
-        switch (isStar){
-            case "0": isStar = "1";break;
-            case "1": isStar = "0";break;
-        }
         data.updateWord(wordName, isStar, null);
     }
 

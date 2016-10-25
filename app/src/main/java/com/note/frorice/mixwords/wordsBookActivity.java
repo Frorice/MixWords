@@ -15,16 +15,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 
 public class wordsBookActivity extends AppCompatActivity {
@@ -32,9 +30,10 @@ public class wordsBookActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<words> wordsList;
     private WordsAdapter wordsAdapter;
-    private Model model;
+    public  Model model;
     private String translationString = null;
     private String bookName;
+    public String actName;
     private String queryWord;
     public static wordsBookActivity wbActivity;
     @Override
@@ -85,10 +84,11 @@ public class wordsBookActivity extends AppCompatActivity {
                                     queryWordView.setText(translationObj.getString("query"));
                                     if(transBasicObj.has("uk-phonetic")){
                                         String pronunUk = transBasicObj.getString("uk-phonetic");
-                                        if(pronunUk.length()>=15){
-                                            pronunUKView.setText("英 【"+pronunUk+"】");
+                                        pronunUKView.setText("英 【"+pronunUk+"】");
+                                        if(pronunUk.length()>=12){
+                                            ((LinearLayout)pronunUKView.getParent()).setOrientation(LinearLayout.VERTICAL);
                                         }else{
-                                            pronunUKView.setText("英 【"+pronunUk+"】\n");
+                                            ((LinearLayout)pronunUKView.getParent()).setOrientation(LinearLayout.HORIZONTAL);
                                         }
 
                                     }
@@ -175,27 +175,50 @@ public class wordsBookActivity extends AppCompatActivity {
 
     private void initStarWordsActivity(Bundle bundle){
         this.setTitle(getResources().getString(R.string.title_activity_star_words));
+        this.actName = getResources().getString(R.string.title_activity_star_words);
+        initWordsList("star");
     }
 
     private void initUnDoneWordsActivity(Bundle bundle){
         this.setTitle(getResources().getString(R.string.title_activity_undone));
+        this.actName = getResources().getString(R.string.title_activity_undone);
+        initWordsList("unDone");
     }
 
     private void initDoneWordsActivity(Bundle bundle){
         this.setTitle(getResources().getString(R.string.title_activity_done));
+        this.actName = getResources().getString(R.string.title_activity_done);
+        initWordsList("done");
     }
 
     private void initBookWordsActivity(Bundle bundle){
+
         bookName = bundle.getString("title");
         this.setTitle(bookName);
+        this.actName = bookName;
+        initWordsList("book");
 
+    }
+
+    private void initWordsList(String actName){
         //实现单词列表
-        LinearLayoutManager layoutManager=new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView     = (RecyclerView) findViewById(R.id.wordsRecyclerView);
 
-
         //获取单词本中的单词
-        wordsList = model.getWordsByBookName(bookName);
+        switch (actName) {
+            case "star":
+                wordsList = model.getStarWords();
+                break;
+            case "unDone":
+                wordsList = model.getUndoneWords();
+                break;
+            case "done":
+                wordsList = model.getDoneWords();
+                break;
+            case "book":
+                wordsList = model.getWordsByBookName(bookName);
+        }
 
         wordsAdapter = new WordsAdapter(wordsList, wordsBookActivity.this);
 
@@ -204,21 +227,4 @@ public class wordsBookActivity extends AppCompatActivity {
         recyclerView.setAdapter(wordsAdapter);
     }
 
-    private static Map handleTranslation(String translation) throws JSONException{
-        JSONObject jsonObject = new JSONObject(translation);
-
-        Map result = new HashMap();
-        Iterator iterator = jsonObject.keys();
-        String key = null;
-        String value = null;
-
-        while (iterator.hasNext()) {
-
-            key = (String) iterator.next();
-            value = jsonObject.getString(key);
-            result.put(key, value);
-
-        }
-        return result;
-    }
 }

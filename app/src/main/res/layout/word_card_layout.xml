@@ -28,12 +28,19 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                <android.support.v7.widget.AppCompatCheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:visibility="invisible"
+                    android:id="@+id/card_checkbox"/>
                 <TextView
                     android:fontFamily="monospace"
                     android:layout_centerVertical="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPureBlack"
+                    android:layout_marginLeft="30dp"
                     android:textSize="@dimen/text_lg"
                     android:id="@+id/card_name" />
                 <android.widget.ImageButton

@@ -1,7 +1,9 @@
 package com.note.frorice.mixwords;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Paint;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -122,6 +124,28 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
 
                 v.setLayoutParams(params);
 
+            }
+        });
+        //为cardView设置长按删除
+        personViewHolder.WordCardView.setOnLongClickListener( new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View v) {
+                final String wordName = Words.get(v.getId()).getName();
+                final CardView card = (CardView) v;
+                AlertDialog.Builder builder = new AlertDialog.Builder(wbActivity);
+                builder.setTitle("删除单词");
+                builder.setMessage("确定删除单词 "+wordName+" 吗？");
+                builder.setNegativeButton("取消",null);
+                builder.setPositiveButton("确定",new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //将单词删除
+                        wbActivity.model.deleteWord(wordName);
+                        card.setVisibility(View.GONE);
+                    }
+                });
+                builder.show();
+                return false;
             }
         });
         //收起单词卡片

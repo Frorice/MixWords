@@ -135,6 +135,17 @@ public class Data {
         }
     }
 
+    public void deleteWordsByBook(String bookName){
+        try{
+            database = databaseHelper.getWritableDatabase();
+            String sql = "delete from words where bookName = '"+ bookName + "'";
+            database.execSQL(sql);
+            database.close();
+        }
+        catch (Exception exp){
+            Toast.makeText(wbActivity,exp.getMessage().toString(),Toast.LENGTH_SHORT).show();
+        }
+    }
     public List<WordsBook> getWordsBooks(){
         try {
             wordsBooks = new ArrayList<>();

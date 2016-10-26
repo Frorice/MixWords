@@ -79,13 +79,14 @@ public class wordsBookActivity extends AppCompatActivity {
                             try {
                                 translationString = msg.obj.toString();
                                 JSONObject translationObj = new JSONObject(translationString);
-                                JSONObject transBasicObj = new JSONObject(translationObj.getString("basic"));
+
                                 if(translationObj.has("basic")){
+                                    JSONObject transBasicObj = new JSONObject(translationObj.getString("basic"));
                                     queryWordView.setText(translationObj.getString("query"));
                                     if(transBasicObj.has("uk-phonetic")){
                                         String pronunUk = transBasicObj.getString("uk-phonetic");
                                         pronunUKView.setText("英 【"+pronunUk+"】");
-                                        if(pronunUk.length()>=12){
+                                        if(pronunUk.length()>=10){
                                             ((LinearLayout)pronunUKView.getParent()).setOrientation(LinearLayout.VERTICAL);
                                         }else{
                                             ((LinearLayout)pronunUKView.getParent()).setOrientation(LinearLayout.HORIZONTAL);
@@ -104,11 +105,16 @@ public class wordsBookActivity extends AppCompatActivity {
                                     }
                                     wordMeanView.setText(explainStr);
                                 }else{
+                                    queryWordView.setText("");
+                                    pronunUKView.setText("");
+                                    pronunUSAView.setText("");
                                     wordMeanView.setText("无法对该单词进行有效的翻译!");
+                                    //将该变量置空，确定操作则不会添加该单词进入单词本
+                                    translationString = null;
                                 }
 
-                            }catch (JSONException exp){
-                                exp.printStackTrace();
+                           }catch (JSONException exp){
+                                Toast.makeText(wordsBookActivity.this, exp.getMessage().toString(),Toast.LENGTH_SHORT).show();
                             }
 
                         }

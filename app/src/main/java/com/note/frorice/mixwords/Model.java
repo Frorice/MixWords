@@ -61,8 +61,10 @@ public class Model {
     public void deleteWord(String name){
         data.deleteWord(name);
     }
-
-
+    //删除单词本内所有单词
+    public void deleteWordsByBook(String bookName){
+        data.deleteWordsByBook(bookName);
+    }
     public List<WordsBook> getWordsBooks(){
         wordsBooksList = data.getWordsBooks();
         return wordsBooksList;

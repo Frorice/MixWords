@@ -27,7 +27,7 @@ public class IndexActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private List<WordsBook> wordsBookList;
     private WordsBookAdapter wordsBookAdapter;
-    private Model model;
+    public  Model model;
     private String databaseName;
     public static IndexActivity idxtivity;
 
@@ -108,7 +108,17 @@ public class IndexActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_about) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("关于");
+            builder.setMessage(
+               "作者：frorice\n"
+              +"邮箱：frorice@163.com\n"
+              +"博客：http://fanfan.zz.mu\n"
+              +"github: https://github.com/frorice"
+            );
+            builder.setPositiveButton("了解",null);
+            builder.show();
             return true;
         }
 

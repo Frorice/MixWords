@@ -3,8 +3,7 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_settings">Settings</string>
+    <string name="action_about">关于</string>
     <string name="title_activity_star_words">星标单词</string>
     <string name="title_activity_done">已完成</string>
     <string name="title_activity_undone">未完成</string>
